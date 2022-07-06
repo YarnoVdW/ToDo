@@ -1,26 +1,32 @@
 package com.icapps.yarno.todolist
 
+import android.app.Application
 import android.content.Context
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 
 
-class ListDataManager(private val context: Context) {
+class ToDoListViewModel(application: Application): AndroidViewModel(application) {
+
+    private val context: Context = application.applicationContext
+    private val _tasklist = MutableLiveData<MutableList<ToDoItem>>()
+    val taskList: LiveData<MutableList<ToDoItem>>
+        get() = _tasklist
+
+
     fun saveToDoList(tdList: ToDoItem) {
         PreferenceManager.getDefaultSharedPreferences(context)
             .edit()
             .putStringSet(tdList.description, tdList.taskList.toHashSet())
             .putInt("position_${tdList.description}", tdList.index)
             .apply()
+        readToDoList()
 
-//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-//            .edit()
-//        for((taskIndex, task) in tdList.list.withIndex()) {
-//            sharedPreferences.putString("$taskIndex", task.toString())
-//        }
-//        sharedPreferences.apply()
     }
 
-    fun readToDoList(): MutableList<ToDoItem>{
+    fun readToDoList(){
         val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
         val content = sharedPrefs.all
         val mockedItems = ArrayList<ToDoItem>()
@@ -31,10 +37,7 @@ class ListDataManager(private val context: Context) {
             val index = content["position_${item.key}"] as Int
             mockedItems.add(ToDoItem(index, item.key, toDoItems))
         }
-        return mockedItems
-
-
-
+        _tasklist.postValue(mockedItems)
 
 
     }

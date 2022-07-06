@@ -3,26 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/ToDoListFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.icapps.yarno.todolist.FirstFragment"
+        android:id="@+id/ToDoListFragment"
+        android:name="com.icapps.yarno.todolist.ToDoListFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/to_do_list_fragment">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_TodoListFragment_to_TaskListFragment"
+            app:destination="@id/TaskListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.icapps.yarno.todolist.SecondFragment"
+        android:id="@+id/TaskListFragment"
+        android:name="com.icapps.yarno.todolist.TaskListFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+        tools:layout="@layout/task_list_fragment">
+        <argument
+            android:name="ToDoItem"
+            app:argType="com.icapps.yarno.todolist.ToDoItem" />
     </fragment>
 </navigation>
