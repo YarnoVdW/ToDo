@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class ToDoListAdapter(var toDoList: MutableList<String>): RecyclerView.Adapter<ToDoListViewHolder>() {
+class ToDoListAdapter(var toDoList: MutableList<ToDoItem>): RecyclerView.Adapter<ToDoListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
@@ -21,8 +21,9 @@ class ToDoListAdapter(var toDoList: MutableList<String>): RecyclerView.Adapter<T
         return toDoList.size
     }
 
-    fun addNewItem(toString: String) {
-        toDoList.add(if (toString.isEmpty()) "New item ${toDoList.size +1}" else toString)
+    fun addNewItem(item: ToDoItem) {
+        toDoList.add(item)
+        notifyItemInserted(toDoList.size - 1) // force rerender
     }
 
 }

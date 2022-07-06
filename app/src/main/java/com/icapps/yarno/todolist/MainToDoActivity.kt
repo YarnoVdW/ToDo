@@ -14,7 +14,6 @@ class MainToDoActivity : AppCompatActivity() { //launcher veranderen in manifest
     private lateinit var recView: RecyclerView
     private lateinit var toDoListAdapter: ToDoListAdapter
     private lateinit var floatingButton: FloatingActionButton
-
     private lateinit var listDataManager: ListDataManager
 
 
@@ -43,12 +42,14 @@ class MainToDoActivity : AppCompatActivity() { //launcher veranderen in manifest
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
         }
+
         AlertDialog.Builder(this)
             .setView(toDoExit)
             .setTitle("Add To Do")
             .setPositiveButton("Create") {dialog, _ ->
-                toDoListAdapter.addNewItem(toDoExit.text.toString())
-                listDataManager.saveToDoList(mutableListOf(toDoExit.text.toString()))
+                val list = ToDoItem(toDoListAdapter.itemCount,toDoExit.text.toString())
+                toDoListAdapter.addNewItem(list)
+                listDataManager.saveToDoList(list)
                 dialog.dismiss()
 
             }

@@ -5,28 +5,35 @@ import androidx.preference.PreferenceManager
 
 
 class ListDataManager(private val context: Context) {
-    fun saveToDoList(tdList: MutableList<String>) {
-//        PreferenceManager.getDefaultSharedPreferences(context)
-//            .edit()
-//            .putStringSet("mocked_data", tdList.toHashSet())
-//            .apply()
-
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    fun saveToDoList(tdList: ToDoItem) {
+        PreferenceManager.getDefaultSharedPreferences(context)
             .edit()
-        for((taskIndex, task) in tdList.withIndex()) {
-            sharedPreferences.putString("$taskIndex", task)
-        }
-        sharedPreferences.apply()
+            .putStringSet(tdList.description, tdList.taskList.toHashSet())
+            .putInt("position_${tdList.description}", tdList.index)
+            .apply()
+
+//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+//            .edit()
+//        for((taskIndex, task) in tdList.list.withIndex()) {
+//            sharedPreferences.putString("$taskIndex", task.toString())
+//        }
+//        sharedPreferences.apply()
     }
 
-    fun readToDoList(): MutableList<String>{
+    fun readToDoList(): MutableList<ToDoItem>{
         val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
         val content = sharedPrefs.all
-        val mockedItems = ArrayList<String>()
+        val mockedItems = ArrayList<ToDoItem>()
+
         for (item in content) {
-            mockedItems.add(item.value.toString())
+            if(item.key.startsWith("position")) continue
+            val toDoItems = ArrayList(item.value as HashSet<String>)
+            val index = content["position_${item.key}"] as Int
+            mockedItems.add(ToDoItem(index, item.key, toDoItems))
         }
         return mockedItems
+
+
 
 
 
