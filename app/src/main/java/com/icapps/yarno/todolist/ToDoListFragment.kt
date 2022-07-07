@@ -11,13 +11,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.icapps.yarno.todolist.databinding.ToDoListFragmentBinding
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class ToDoListFragment : Fragment(){
+class ToDoListFragment : Fragment() {
 
     private var _binding: ToDoListFragmentBinding? = null
 
@@ -27,18 +28,24 @@ class ToDoListFragment : Fragment(){
     private lateinit var toDoListViewModel: ToDoListViewModel
     private lateinit var toDoListAdapter: ToDoListAdapter
 
+    private var hasLoadedToDoList = false
+    private lateinit var toDoList: ToDoItem
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toDoListViewModel = ViewModelProvider(this).get(ToDoListViewModel::class.java)
+        toDoListViewModel =
+            ViewModelProvider(this).get(ToDoListViewModel::class.java) // gaat een instantie van ToDOListViewModel maken
 
         toDoListViewModel.taskList.observe(this) {
+            toDoListAdapter = ToDoListAdapter(it) { selectedToDoList ->
+                navigateToTaskList(selectedToDoList)
+            }
 
-            toDoListAdapter.toDoList = it
-            toDoListAdapter.notifyDataSetChanged()
-
-
+            if (!hasLoadedToDoList) {
+                binding.recView.adapter = toDoListAdapter
+                hasLoadedToDoList = true
+            }
         }
-        toDoListViewModel.readToDoList()
     }
 
     override fun onCreateView(
@@ -47,6 +54,7 @@ class ToDoListFragment : Fragment(){
     ): View? {
 
         _binding = ToDoListFragmentBinding.inflate(inflater, container, false)
+
         return binding.root
 
     }
@@ -57,11 +65,9 @@ class ToDoListFragment : Fragment(){
         toDoListAdapter = ToDoListAdapter(ArrayList()) {
             navigateToTaskList(it)
         }
-        binding.recView.adapter = toDoListAdapter
-
         with(binding.recView) {
             layoutManager = LinearLayoutManager(context)
-
+            adapter = toDoListAdapter
         }
         binding.floatingActionButton.setOnClickListener {
             showDialog()
@@ -71,12 +77,14 @@ class ToDoListFragment : Fragment(){
     private fun navigateToTaskList(list: ToDoItem) {
         val action = ToDoListFragmentDirections.actionTodoListFragmentToTaskListFragment(list)
         findNavController().navigate(action)
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     private fun showDialog() {
         val toDoExit = EditText(context).apply {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -87,8 +95,8 @@ class ToDoListFragment : Fragment(){
             AlertDialog.Builder(it)
                 .setView(toDoExit)
                 .setTitle("Add To Do")
-                .setPositiveButton("Create") {dialog, _ ->
-                    val list = ToDoItem(toDoListAdapter.itemCount,toDoExit.text.toString())
+                .setPositiveButton("Create") { dialog, _ ->
+                    val list = ToDoItem(toDoListAdapter.itemCount, toDoExit.text.toString())
                     toDoListViewModel.saveToDoList(list)
 
                     dialog.dismiss()
@@ -101,7 +109,6 @@ class ToDoListFragment : Fragment(){
 
 
     }
-
 
 
 }

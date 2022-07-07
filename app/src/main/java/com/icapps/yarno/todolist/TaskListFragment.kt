@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.icapps.yarno.todolist.databinding.ToDoListFragmentBinding
 
 /**
@@ -18,12 +19,13 @@ class TaskListFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
+    private val args: TaskListFragmentArgs by navArgs()
+    private lateinit var toDoItem: ToDoItem
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        toDoItem = args.toDoItem
         _binding = ToDoListFragmentBinding.inflate(inflater, container, false)
         return binding.root
 
